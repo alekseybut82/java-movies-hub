@@ -20,5 +20,7 @@ public class MoviesStore {
     }
 
 
-
+    public Map<Integer, Movie> getMoviesMap() {
+        return moviesMap;
+    }
 }

@@ -2,6 +2,7 @@ package ru.practicum.moviehub.http;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import ru.practicum.moviehub.model.Movie;
 import ru.practicum.moviehub.store.MoviesStore;
 
 import java.net.URI;
@@ -19,6 +20,9 @@ public class MoviesApiTest {
     @BeforeAll
     static void beforeAll() {
         MoviesStore store = new MoviesStore();
+        store.add(new Movie("1",2001));
+        store.add(new Movie("2",2002));
+        store.add(new Movie("3",2003));
         MoviesServer server = new MoviesServer(store, 8080);
         server.start();
     }

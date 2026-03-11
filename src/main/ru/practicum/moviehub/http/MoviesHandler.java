@@ -30,7 +30,7 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private void handleGetRequest(HttpExchange httpExchange)  {
-        String response = new Gson().toJson(store);
+        String response = new Gson().toJson(store.getMoviesMap().entrySet().toArray());
         sendResponse(httpExchange, response, 200);
 //        sendResponse(HttpExchange , String stringResponse, int statusCode)
     }
