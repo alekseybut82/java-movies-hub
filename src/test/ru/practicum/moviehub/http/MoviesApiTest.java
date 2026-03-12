@@ -226,7 +226,7 @@ public class MoviesApiTest {
     }
 
     @Test
-    public void FilterMovieByYearInQueryParams_whenIdIsNotPresent_return400() throws Exception {
+    public void filterMovieByYearInQueryParams_whenIdIsNotPresent_return400() throws Exception {
 
         HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies?year=YUln");
 
@@ -238,7 +238,7 @@ public class MoviesApiTest {
                 "Content-Type должен содержать формат данных и кодировку");
 
         String body = response.body().trim();
-        assertTrue(body.contains("Некорректный параметр запроса — \\u0027year\\u0027"),
+        assertTrue(body.contains("Некорректный параметр запроса — \"year\""),
                 "Год не является числом от 0 до 2027");
     }
 
