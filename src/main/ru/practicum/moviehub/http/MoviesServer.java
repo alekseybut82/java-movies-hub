@@ -6,7 +6,6 @@ import ru.practicum.moviehub.store.MoviesStore;
 import java.net.InetSocketAddress;
 
 public class MoviesServer {
-
     private final HttpServer server;
 
     public MoviesServer(MoviesStore store, int port) {
@@ -19,12 +18,12 @@ public class MoviesServer {
         }
     }
 
-    public void start(){
+    public void start() {
         server.start();
         System.out.println("HTTP-сервер запущен!");
     }
 
-    public void stop(){
+    public void stop() {
         server.stop(0);
         System.out.println("HTTP-сервер остановлен!");
     }

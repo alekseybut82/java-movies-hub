@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class BaseHttpHandler implements HttpHandler {
-
     protected final MoviesStore store;
-
     protected final Gson gson = new Gson();
 
     public BaseHttpHandler(MoviesStore store) {

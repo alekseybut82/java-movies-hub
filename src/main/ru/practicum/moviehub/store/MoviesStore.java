@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MoviesStore {
-
     private int moviesCounter;
     private Map<Integer, Movie> moviesMap;
 

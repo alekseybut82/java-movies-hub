@@ -13,13 +13,13 @@ import java.time.Year;
 import java.util.*;
 
 public class MoviesHandler extends BaseHttpHandler {
-    
+
     public MoviesHandler(MoviesStore store) {
         super(store);
     }
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException{
+    public void handle(HttpExchange httpExchange) throws IOException {
         String method = httpExchange.getRequestMethod();
         switch (method.toUpperCase()) {
             case "GET" -> handleGetRequest(httpExchange);
@@ -76,7 +76,6 @@ public class MoviesHandler extends BaseHttpHandler {
     }
 
     private void handlePostRequest(HttpExchange httpExchange) throws IOException {
-
         if (!httpExchange.getRequestHeaders().getFirst("Content-Type").equals("application/json"))
             sendErrorResponse(httpExchange, "Не поддерживаемый тип данных",
                     List.of("Проверьте Media Type"), 422);
