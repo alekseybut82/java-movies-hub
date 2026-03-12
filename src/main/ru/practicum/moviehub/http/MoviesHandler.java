@@ -43,7 +43,7 @@ public class MoviesHandler extends BaseHttpHandler {
                 year = Integer.parseInt(strYear);
                 needFiter = true;
             } catch (NumberFormatException exception) {
-                sendErrorResponse(httpExchange, "Некорректный параметр запроса — 'year'", List.of(), 400);
+                sendErrorResponse(httpExchange, "Некорректный параметр запроса — year", List.of(), 400);
                 return;
             }
         } else {

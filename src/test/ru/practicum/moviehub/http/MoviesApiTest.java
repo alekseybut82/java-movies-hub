@@ -238,7 +238,7 @@ public class MoviesApiTest {
                 "Content-Type должен содержать формат данных и кодировку");
 
         String body = response.body().trim();
-        assertTrue(body.contains("Некорректный параметр запроса — \"year\""),
+        assertTrue(body.contains("Некорректный параметр запроса — year"),
                 "Год не является числом от 0 до 2027");
     }
 
