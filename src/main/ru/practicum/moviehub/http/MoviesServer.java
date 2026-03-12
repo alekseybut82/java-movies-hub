@@ -1,14 +1,9 @@
 package ru.practicum.moviehub.http;
 
-import com.sun.net.httpserver.HttpContext;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import ru.practicum.moviehub.store.MoviesStore;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.Executor;
-import java.util.logging.Handler;
 
 public class MoviesServer {
 
@@ -18,7 +13,7 @@ public class MoviesServer {
         try {
             server = HttpServer.create(new InetSocketAddress(port),0);
             server.createContext("/movies", new MoviesHandler(store));
-            server.createContext("/movies/{id}", new SingleMovieHandler(store));
+            server.createContext("/movies/", new SingleMovieHandler(store));
         } catch (Exception e) {
             throw new RuntimeException("Не удалось поднять http-сервер");
         }
