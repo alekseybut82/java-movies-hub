@@ -23,6 +23,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MoviesApiTest {
 
+    private static final String LOCALHOST_8080_MOVIES = "http://localhost:8080/movies";
+
     private static MoviesStore store;
     private static MoviesServer server;
 
@@ -82,7 +84,7 @@ public class MoviesApiTest {
     @Test
     public void getMovies_whenEmpty_returnsEmptyArray() throws Exception {
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES);
 
         assertEquals(200, response.statusCode(), "GET /movies должен вернуть 200");
 
@@ -102,7 +104,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2003));
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES);
 
         assertEquals(200, response.statusCode(), "GET /movies должен вернуть 200");
 
@@ -122,7 +124,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2003));
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies/3");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES + "/3");
 
         assertEquals(200, response.statusCode(), "GET /movies/3 должен вернуть 200");
 
@@ -141,7 +143,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2003));
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies/100");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES + "/100");
 
         assertEquals(404, response.statusCode(), "GET /movies/100 должен вернуть 404");
 
@@ -156,9 +158,9 @@ public class MoviesApiTest {
 
     @Test
     public void getMovieByIdInPath_whenIdIsNotInteger_return400() throws Exception {
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies/jhkkjvg");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES + "/abracadabra");
 
-        assertEquals(400, response.statusCode(), "GET /movies/jhkkjvg должен вернуть 400");
+        assertEquals(400, response.statusCode(), "GET /movies/abracadabra должен вернуть 400");
 
         String contentTypeHeaderValue = response.headers().firstValue("Content-Type").orElse("");
         assertEquals("application/json; charset=UTF-8", contentTypeHeaderValue,
@@ -174,7 +176,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2003));
 
-        HttpResponse<String> response = sendDeleteRequest("http://localhost:8080/movies/100");
+        HttpResponse<String> response = sendDeleteRequest(LOCALHOST_8080_MOVIES + "/100");
 
         assertEquals(404, response.statusCode(), "DELETE /movies/100 должен вернуть 404");
 
@@ -192,7 +194,7 @@ public class MoviesApiTest {
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2003));
 
-        HttpResponse<String> response = sendDeleteRequest("http://localhost:8080/movies/3");
+        HttpResponse<String> response = sendDeleteRequest(LOCALHOST_8080_MOVIES + "/3");
 
         assertEquals(204, response.statusCode(), "DELETE /movies/3 должен вернуть 204");
 
@@ -206,12 +208,26 @@ public class MoviesApiTest {
     }
 
     @Test
+    public void deleteMovieByIdInPath_whenIdIsNotInteger_return400() throws Exception {
+        HttpResponse<String> response = sendDeleteRequest(LOCALHOST_8080_MOVIES + "/abracadabra");
+
+        assertEquals(400, response.statusCode(), "DELETE /movies/abracadabra должен вернуть 400");
+
+        String contentTypeHeaderValue = response.headers().firstValue("Content-Type").orElse("");
+        assertEquals("application/json; charset=UTF-8", contentTypeHeaderValue,
+                "Content-Type должен содержать формат данных и кодировку");
+
+        String body = response.body().trim();
+        assertTrue(body.contains("Некорректный идентификатор кино"), "Фильма с таким идентификатором нет");
+    }
+
+    @Test
     public void filterMovieByYearInQueryParams_whenYearIsPresent_return200() throws Exception {
         store.addMovie(new Movie("A",2001));
         store.addMovie(new Movie("B",2002));
         store.addMovie(new Movie("C",2002));
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies?year=2002");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES + "?year=2002");
 
         assertEquals(200, response.statusCode(), "GET /movies... должен вернуть 200");
 
@@ -228,7 +244,7 @@ public class MoviesApiTest {
     @Test
     public void filterMovieByYearInQueryParams_whenIdIsNotPresent_return400() throws Exception {
 
-        HttpResponse<String> response = sendGetRequest("http://localhost:8080/movies?year=YUln");
+        HttpResponse<String> response = sendGetRequest(LOCALHOST_8080_MOVIES + "?year=YUln");
 
         assertEquals(400, response.statusCode(), "GET /movies... должен вернуть 400");
 
@@ -246,7 +262,7 @@ public class MoviesApiTest {
     public void addMovie_whenSuccesses_return201() throws Exception {
         Movie movie = new Movie("B", 2002);
 
-        HttpResponse<String> response = sendPostRequest("http://localhost:8080/movies",
+        HttpResponse<String> response = sendPostRequest(LOCALHOST_8080_MOVIES,
                 new Gson().toJson(movie));
 
         assertEquals(201, response.statusCode(), "POST /movies... должен вернуть 201");
@@ -266,7 +282,7 @@ public class MoviesApiTest {
     @Test
     public void addMovie_whenVadationCheckFail_return422() throws Exception {
 
-        HttpResponse<String> response = sendPostRequest("http://localhost:8080/movies",
+        HttpResponse<String> response = sendPostRequest(LOCALHOST_8080_MOVIES,
                 "{\"title\":\"  \",\"year\":168}");
 
         assertEquals(422, response.statusCode(), "POST /movies... должен вернуть 422");
@@ -281,8 +297,71 @@ public class MoviesApiTest {
                 body.contains("year не может быть меньше 1888"));
     }
 
+    @Test
+    public void addMovie_whenJsonIncorrect_return400() throws Exception {
+
+        HttpResponse<String> response = sendPostRequest(LOCALHOST_8080_MOVIES,
+                "{\"title\":\"  \",\"year\":}");
+
+        assertEquals(400, response.statusCode(), "POST /movies... должен вернуть 400");
+
+        String contentTypeHeaderValue =
+                response.headers().firstValue("Content-Type").orElse("");
+        assertEquals("application/json; charset=UTF-8", contentTypeHeaderValue,
+                "Content-Type должен содержать формат данных и кодировку");
+
+        String body = response.body().trim();
+        assertTrue(body.contains("Некорректный JSON"));
+    }
+
+    @Test
+    public void used_notAllowHttpMethod_ForMoviesCollectionEndpoint_return405() throws Exception {
+
+        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(LOCALHOST_8080_MOVIES))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+
+        assertEquals(405, response.statusCode(), "PUT /movies... должен вернуть 405");
+
+        String contentTypeHeaderValue =
+                response.headers().firstValue("Content-Type").orElse("");
+        assertEquals("application/json; charset=UTF-8", contentTypeHeaderValue,
+                "Content-Type должен содержать формат данных и кодировку");
+
+        String body = response.body().trim();
+        assertTrue(body.contains("Метод запроса не поддерживается"), "Поддерживается только GET/POST");
+    }
+
+    @Test
+    public void used_notAllowHttpMethod_ForMoviesResourceEndpoint_return405() throws Exception {
+
+        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(LOCALHOST_8080_MOVIES + "/"))
+                .PUT(HttpRequest.BodyPublishers.ofString("не важно что"))
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+
+        assertEquals(405, response.statusCode(), "PUT /movies... должен вернуть 405");
+
+        String contentTypeHeaderValue =
+                response.headers().firstValue("Content-Type").orElse("");
+        assertEquals("application/json; charset=UTF-8", contentTypeHeaderValue,
+                "Content-Type должен содержать формат данных и кодировку");
+
+        String body = response.body().trim();
+        assertTrue(body.contains("Метод запроса не поддерживается"), "Поддерживается только GET/POST");
+    }
+
     @AfterAll
-    static void afterAll() {
+    public static void afterAll() {
         if (server != null) server.stop();
     }
 }
